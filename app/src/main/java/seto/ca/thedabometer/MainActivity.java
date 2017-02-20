@@ -8,29 +8,33 @@ import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 
 public class MainActivity extends AppCompatActivity {
+    LinearLayout l;
     SensorManager manager;
     Sensor sensor;
     DabEventListener listener;
-    public TextView dabCountTextView;
+    TextView output;
     double[][] values;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        values = new double[100][3];
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        double [] values = new double [3];
+        l = (LinearLayout) findViewById(R.id.activity_main);
+
+
         manager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = manager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        TextView output = (TextView) findViewById(R.id.dabcounttextview);
         //listener = new AccelerometerSensorEventListener(output, graph, values);
-        manager.registerListener(listener, sensor, manager.SENSOR_DELAY_GAME);
-        dabCountTextView = (TextView) findViewById(R.id.dabcounttextview);
+        listener = new DabEventListener(output, values);
 
+
+        manager.registerListener(listener, sensor, manager.SENSOR_DELAY_GAME);
 
 
 

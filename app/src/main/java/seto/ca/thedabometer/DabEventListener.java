@@ -3,16 +3,18 @@ package seto.ca.thedabometer;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.widget.TextView;
 
-/**
- * Created by andrewseto on 18/02/2017.
- */
 public class DabEventListener implements SensorEventListener{
-    double values [];
-    private float maxValues[];
+    double values[][] = new double [100][3];
     private float[] filteredReadings;
     private float[][] historicalReadings;
+    private float value[];
+    private float maxValue[];
+    private float maxMag;
 
+
+    private TextView output;
 
     int ctr_z;
 
@@ -21,12 +23,13 @@ public class DabEventListener implements SensorEventListener{
     String dab;
     private final int C = 16;
 
+
     enum state{WAIT,RISE_LEFTY,FALL_LEFTY,RISE_RIGHTY,FALL_RIGHTY,DETERMINED};
     state myState = state.WAIT;
 
     enum sig{SIG_LEFTY,SIG_RIGHTY,SIG_X};
-
     sig mySig = sig.SIG_X;
+
     double recordx = 0;
     double recordy = 0;
     double recordz = 0;
@@ -41,16 +44,23 @@ public class DabEventListener implements SensorEventListener{
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-    DabEventListener (double[] inValues){
-        values=inValues;
-        maxValues = new float[3];
-        dab = "NO DAB";
+    public DabEventListener (TextView view, double[][] inValues){
         historicalReadings = new float[100][3];
         //set historicalReadings to 0
         for(int i = 99; i >=0; i--) {
             for(int j = 0; j<3;j++)
                 historicalReadings[i][j] = 0;
         }
+        output = view;
+        values=inValues;
+        maxValue = new float[3];
+        value = new float[3];
+        maxMag = 0;
+        ctr_z = SAMPLEDEFAULT;
+
+        dab = "NO DAB";
+
+        filteredReadings = new float[3];
         filteredReadings[0] = 0;
         filteredReadings[1] = 0;
         filteredReadings[2] = 0;
@@ -60,13 +70,13 @@ public class DabEventListener implements SensorEventListener{
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION){
             //get accel values
-            values[0]=event.values[0];
-            values[1]=event.values[1];
-            values[2]=event.values[2];
+            value[0]=event.values[0];
+            value[1]=event.values[1];
+            value[2]=event.values[2];
 
             //filter
             for(int i = 0; i < 3; i++)
-                filteredReadings[i] += (values[i] - filteredReadings[i])/C;
+                filteredReadings[i] += (value[i] - filteredReadings[i])/C;
 
 
             for(int i = 99; i >= 1; i--) {
@@ -78,7 +88,21 @@ public class DabEventListener implements SensorEventListener{
             historicalReadings[99][1] = filteredReadings[1];
             historicalReadings[99][2] = filteredReadings[2];
 
+            if (index == 100) {
+                index = 0;
+                wraps++;
+            }
+            if (wraps == 0 && index == 99) {
+                recordx = filteredReadings[0];
+                recordy = filteredReadings[1];
+                recordz = filteredReadings[2];
+            }
 
+            output.setText("Readings:\n" + filteredReadings[0] + " , \n" +filteredReadings[1] + " , \n" + filteredReadings[2] + '\n' +dab);
+
+            values[index][0] = filteredReadings[0];
+            values[index][1] = filteredReadings[1];
+            values[index][2] = filteredReadings[2];
             if (filteredReadings[0] > recordx) {
                 recordx = filteredReadings[0];
             } else if (filteredReadings[1] > recordy) {
@@ -86,14 +110,36 @@ public class DabEventListener implements SensorEventListener{
             } else if (filteredReadings[2] > recordz) {
                 recordz = filteredReadings[2];
             }
+            index++;
+
+            FSM_Z();
+
+
+         //   output.setText(value[0]+",\n"+value[1]+",\n"+value[2]+"\n"+dab);
+
         }
 
 
     }
+
+    public float getMaxMag() {
+        return maxMag;
+    }
+    public void setMaxMag(float value)  {
+        maxMag = value;
+    }
+    public float[] getMax()    {
+        return maxValue;
+    }
+    public void setMax(float[] value)    {
+        maxValue[0] = value[0];
+        maxValue[1] = value[1];
+        maxValue[2] = value[2];
+    }
     public void reset() {
         for(int i = 0; i<3;i++ ) {
-            values[i] = 0;
-            maxValues[i] = 0;
+            value[i] = 0;
+            maxValue[i] = 0;
         }
 
     }
@@ -115,7 +161,7 @@ public class DabEventListener implements SensorEventListener{
                     break;
                 case RISE_LEFTY:
                     if (dA <= 0) {
-                        if (historicalReadings[99][1] >= THRESHOLDA[1]) {
+                        if (historicalReadings[99][0] >= THRESHOLDA[1]) {
                             myState = state.FALL_LEFTY;
                         } else {
                             myState = state.DETERMINED;
@@ -124,7 +170,7 @@ public class DabEventListener implements SensorEventListener{
                     break;
                 case FALL_LEFTY:
                     if (dA >= 0) {
-                        if (historicalReadings[99][1] <= THRESHOLDA[2]) {
+                        if (historicalReadings[99][0] <= THRESHOLDA[2]) {
                             mySig = sig.SIG_LEFTY;
                         }
                         myState = state.DETERMINED;
@@ -133,7 +179,7 @@ public class DabEventListener implements SensorEventListener{
 
                 case FALL_RIGHTY:
                     if (dA >= 0) {
-                        if (historicalReadings[99][1] <= THRESHOLDB[1]) {
+                        if (historicalReadings[99][0] <= THRESHOLDB[1]) {
                             mySig = sig.SIG_RIGHTY;
                         }
                         myState = state.DETERMINED;
@@ -142,7 +188,7 @@ public class DabEventListener implements SensorEventListener{
 
                 case RISE_RIGHTY:
                     if (dA <= 0) {
-                        if (historicalReadings[99][1] >= THRESHOLDB[1]) {
+                        if (historicalReadings[99][0] >= THRESHOLDB[2]) {
                             mySig = sig.SIG_RIGHTY;
                         }
                         myState = state.DETERMINED;
