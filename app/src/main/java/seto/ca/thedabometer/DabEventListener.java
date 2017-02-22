@@ -13,8 +13,13 @@ public class DabEventListener implements SensorEventListener{
     private float maxValue[];
     private float maxMag;
 
+    public int dabCount = 0;
+
     static int resetctr = 0;
     private TextView output;
+    public boolean leftDab = false;
+    public boolean rightDab = false;
+
 
     int ctr_z;
 
@@ -26,7 +31,6 @@ public class DabEventListener implements SensorEventListener{
 
     enum state{WAIT,RISE_LEFTY,FALL_LEFTY,RISE_RIGHTY,FALL_RIGHTY,DETERMINED};
     state myState = state.WAIT;
-
     enum sig{SIG_LEFTY,SIG_RIGHTY,SIG_X};
     sig mySig = sig.SIG_X;
 
@@ -98,7 +102,7 @@ public class DabEventListener implements SensorEventListener{
                 recordz = filteredReadings[2];
             }
 
-            output.setText("Readings:\n" + filteredReadings[0] + " , \n" +filteredReadings[1] + " , \n" + filteredReadings[2] + '\n' +dab);
+            output.setText("Dabs:\n" +dabCount + '\n' +dab);
 
             values[index][0] = filteredReadings[0];
             values[index][1] = filteredReadings[1];
@@ -202,10 +206,25 @@ public class DabEventListener implements SensorEventListener{
                     break;
                 case DETERMINED:
                     //OUTPUT UP-DOWN HERE
+                    //dabCount++;
                     if (mySig == sig.SIG_LEFTY) {
                         //do we need a textview object to .setText(Zsignature);?
+
+                        if (!rightDab){
+                            dabCount++;
+                            rightDab = true;
+                            leftDab = false;
+                        }
                         dab = "NICE DAB";
+
                     } else if (mySig == sig.SIG_RIGHTY) {
+
+                        if (!leftDab){
+                            dabCount++;
+                            leftDab = true;
+                            rightDab = false;
+                        }
+
                         //do we need a textview object to .setText(Zsignature);?
                         //output
                         dab = "NICE DAB";
