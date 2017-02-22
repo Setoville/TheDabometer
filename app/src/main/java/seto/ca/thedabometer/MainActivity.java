@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        l = (LinearLayout) findViewById(R.id.activity_main);
 
 
         manager = (SensorManager) getSystemService(SENSOR_SERVICE);

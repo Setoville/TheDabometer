@@ -13,7 +13,7 @@ public class DabEventListener implements SensorEventListener{
     private float maxValue[];
     private float maxMag;
 
-
+    static int resetctr = 0;
     private TextView output;
 
     int ctr_z;
@@ -112,10 +112,8 @@ public class DabEventListener implements SensorEventListener{
             }
             index++;
 
+
             FSM_Z();
-
-
-         //   output.setText(value[0]+",\n"+value[1]+",\n"+value[2]+"\n"+dab);
 
         }
 
@@ -144,6 +142,12 @@ public class DabEventListener implements SensorEventListener{
 
     }
     public void FSM_Z()  {
+        System.out.println("STATE:"+myState.toString() + "SIG" + mySig.toString());
+        if (myState == state.RISE_LEFTY || myState == state.RISE_RIGHTY){
+            //resetctr++;
+           // System.out.println(resetctr);
+
+        }
 
         //FSM FOR Z AXIS BEGINS
         if(ctr_z >= 0) {
@@ -157,6 +161,8 @@ public class DabEventListener implements SensorEventListener{
                     } else if (dA < THRESHOLDB[0]) {
                         myState = state.FALL_RIGHTY;
                     }
+
+
 
                     break;
                 case RISE_LEFTY:
@@ -198,15 +204,15 @@ public class DabEventListener implements SensorEventListener{
                     //OUTPUT UP-DOWN HERE
                     if (mySig == sig.SIG_LEFTY) {
                         //do we need a textview object to .setText(Zsignature);?
-                        dab = "LEFT";
+                        dab = "NICE DAB";
                     } else if (mySig == sig.SIG_RIGHTY) {
                         //do we need a textview object to .setText(Zsignature);?
                         //output
-                        dab = "RIGHT";
+                        dab = "NICE DAB";
+
 
                     } //else
                     //out = "UNDETERMINED";
-
                     mySig = sig.SIG_X;
                     //Log.d(Zsignature.toString());
 
@@ -214,18 +220,20 @@ public class DabEventListener implements SensorEventListener{
 
                 default:
                     myState = state.WAIT;
+
+                    mySig = sig.SIG_X;
                     //not z
                     //out = "UNDETERMINED";
                     break;
-
-
             }
             if (ctr_z <= 0) {
                 //RESET AFTER 30 SAMPLES AND NOTHING
                 myState = state.WAIT;
                 mySig = sig.SIG_X;
                 ctr_z = 31;
+                dab = "NO DAB";
             }
+
 
             ctr_z--;
         }
