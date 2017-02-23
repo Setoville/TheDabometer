@@ -3,17 +3,17 @@ package seto.ca.thedabometer;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class DabEventListener implements SensorEventListener{
     double values[][] = new double [100][3];
     private float[] filteredReadings;
     private float[][] historicalReadings;
-    private float value[];
-    private float maxValue[];
-    private float maxMag;
+    public static float value[];
 
-    public int dabCount = 0;
+
+    public static int dabCount = 0;
 
     static int resetctr = 0;
     private TextView output;
@@ -49,6 +49,7 @@ public class DabEventListener implements SensorEventListener{
 
     }
     public DabEventListener (TextView view, double[][] inValues){
+
         historicalReadings = new float[100][3];
         //set historicalReadings to 0
         for(int i = 99; i >=0; i--) {
@@ -57,9 +58,7 @@ public class DabEventListener implements SensorEventListener{
         }
         output = view;
         values=inValues;
-        maxValue = new float[3];
         value = new float[3];
-        maxMag = 0;
         ctr_z = SAMPLEDEFAULT;
 
         dab = "NO DAB";
@@ -102,7 +101,8 @@ public class DabEventListener implements SensorEventListener{
                 recordz = filteredReadings[2];
             }
 
-            output.setText("Dabs:\n" +dabCount + '\n' +dab);
+            output.setText(Integer.toString(dabCount));
+            System.out.println("DC:" +dabCount);
 
             values[index][0] = filteredReadings[0];
             values[index][1] = filteredReadings[1];
@@ -124,34 +124,17 @@ public class DabEventListener implements SensorEventListener{
 
     }
 
-    public float getMaxMag() {
-        return maxMag;
-    }
-    public void setMaxMag(float value)  {
-        maxMag = value;
-    }
-    public float[] getMax()    {
-        return maxValue;
-    }
-    public void setMax(float[] value)    {
-        maxValue[0] = value[0];
-        maxValue[1] = value[1];
-        maxValue[2] = value[2];
-    }
-    public void reset() {
+    static public void resetDabCount()  {
+        dabCount = 0;
         for(int i = 0; i<3;i++ ) {
             value[i] = 0;
-            maxValue[i] = 0;
         }
-
     }
-    public void FSM_Z()  {
-        System.out.println("STATE:"+myState.toString() + "SIG" + mySig.toString());
-        if (myState == state.RISE_LEFTY || myState == state.RISE_RIGHTY){
-            //resetctr++;
-           // System.out.println(resetctr);
 
-        }
+
+
+    public void FSM_Z()  {
+        //System.out.println("STATE:"+myState.toString() + "SIG" + mySig.toString());
 
         //FSM FOR Z AXIS BEGINS
         if(ctr_z >= 0) {
@@ -225,8 +208,7 @@ public class DabEventListener implements SensorEventListener{
                             rightDab = false;
                         }
 
-                        //do we need a textview object to .setText(Zsignature);?
-                        //output
+
                         dab = "NICE DAB";
 
 
@@ -241,14 +223,15 @@ public class DabEventListener implements SensorEventListener{
                     myState = state.WAIT;
 
                     mySig = sig.SIG_X;
-                    //not z
-                    //out = "UNDETERMINED";
+
                     break;
             }
             if (ctr_z <= 0) {
                 //RESET AFTER 30 SAMPLES AND NOTHING
                 myState = state.WAIT;
                 mySig = sig.SIG_X;
+                leftDab=false;
+                rightDab=false;
                 ctr_z = 31;
                 dab = "NO DAB";
             }

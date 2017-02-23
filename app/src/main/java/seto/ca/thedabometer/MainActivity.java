@@ -5,16 +5,16 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
 public class MainActivity extends AppCompatActivity {
-    LinearLayout l;
     SensorManager manager;
     Sensor sensor;
     DabEventListener listener;
-    TextView output;
     double[][] values;
 
     @Override
@@ -29,15 +29,19 @@ public class MainActivity extends AppCompatActivity {
         manager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = manager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         TextView output = (TextView) findViewById(R.id.dabcounttextview);
-        //listener = new AccelerometerSensorEventListener(output, graph, values);
+        Button resetButton = (Button) findViewById(R.id.resetButton);
         listener = new DabEventListener(output, values);
-
-
+        resetButton.setOnClickListener(dabButtonEventListener);
         manager.registerListener(listener, sensor, manager.SENSOR_DELAY_GAME);
 
 
 
     }
+    private View.OnClickListener dabButtonEventListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            DabEventListener.resetDabCount();
+        }
+    };
 
 
 }

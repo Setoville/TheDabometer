@@ -36,8 +36,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/recordButton"
-        android:hint="Record Dabs"
+        android:id="@+id/resetButton"
+        android:hint="Reset Dabs"
         />
 
     <TextView
