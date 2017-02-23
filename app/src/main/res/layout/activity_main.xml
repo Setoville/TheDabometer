@@ -12,34 +12,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="seto.ca.thedabometer.MainActivity">
 
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select your dominant dab hand.." />
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Left Handed Dab"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Right Handed Dab"/>
-
-    </LinearLayout>
-
-
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/resetButton"
-        android:hint="Reset Dabs"
-        />
-
+        android:text="Waiting..."
+        android:id="@+id/dabstatus"
+        android:textSize="50dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,5 +30,25 @@
         android:text="0"
         android:textSize="40dp"
         android:id="@+id/dabcounttextview"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/resetButton"
+        android:hint="Reset Dabs"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="40dp"
+        android:text="Dab Streak:"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="40dp"
+        android:id="@+id/dabstreaktextview"/>
 
 </LinearLayout>

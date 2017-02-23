@@ -11,12 +11,11 @@ public class DabEventListener implements SensorEventListener{
     private float[] filteredReadings;
     private float[][] historicalReadings;
     public static float value[];
-
-
+    public static int dabStreak = 0;
     public static int dabCount = 0;
 
-    static int resetctr = 0;
     private TextView output;
+    private TextView dabstatus;
     public boolean leftDab = false;
     public boolean rightDab = false;
 
@@ -48,7 +47,7 @@ public class DabEventListener implements SensorEventListener{
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-    public DabEventListener (TextView view, double[][] inValues){
+    public DabEventListener (TextView view, double[][] inValues, TextView dabStatusPass){
 
         historicalReadings = new float[100][3];
         //set historicalReadings to 0
@@ -57,11 +56,12 @@ public class DabEventListener implements SensorEventListener{
                 historicalReadings[i][j] = 0;
         }
         output = view;
+        dabstatus = dabStatusPass;
         values=inValues;
         value = new float[3];
         ctr_z = SAMPLEDEFAULT;
 
-        dab = "NO DAB";
+        dab = "Waiting...";
 
         filteredReadings = new float[3];
         filteredReadings[0] = 0;
@@ -102,6 +102,8 @@ public class DabEventListener implements SensorEventListener{
             }
 
             output.setText(Integer.toString(dabCount));
+            dabstatus.setText(dab);
+
             System.out.println("DC:" +dabCount);
 
             values[index][0] = filteredReadings[0];
@@ -115,13 +117,8 @@ public class DabEventListener implements SensorEventListener{
                 recordz = filteredReadings[2];
             }
             index++;
-
-
             FSM_Z();
-
         }
-
-
     }
 
     static public void resetDabCount()  {
@@ -129,12 +126,10 @@ public class DabEventListener implements SensorEventListener{
         for(int i = 0; i<3;i++ ) {
             value[i] = 0;
         }
+        dabStreak = 0;
     }
 
-
-
     public void FSM_Z()  {
-        //System.out.println("STATE:"+myState.toString() + "SIG" + mySig.toString());
 
         //FSM FOR Z AXIS BEGINS
         if(ctr_z >= 0) {
@@ -233,9 +228,8 @@ public class DabEventListener implements SensorEventListener{
                 leftDab=false;
                 rightDab=false;
                 ctr_z = 31;
-                dab = "NO DAB";
+                dab = "Waiting...";
             }
-
 
             ctr_z--;
         }

@@ -1,13 +1,10 @@
 package seto.ca.thedabometer;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -30,7 +27,9 @@ public class MainActivity extends AppCompatActivity {
         sensor = manager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         TextView output = (TextView) findViewById(R.id.dabcounttextview);
         Button resetButton = (Button) findViewById(R.id.resetButton);
-        listener = new DabEventListener(output, values);
+        TextView dabStatus = (TextView) findViewById(R.id.dabstatus);
+
+        listener = new DabEventListener(output, values, dabStatus);
         resetButton.setOnClickListener(dabButtonEventListener);
         manager.registerListener(listener, sensor, manager.SENSOR_DELAY_GAME);
 
