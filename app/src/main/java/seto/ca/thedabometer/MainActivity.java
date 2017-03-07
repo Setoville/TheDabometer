@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
         TextView output = (TextView) findViewById(R.id.dabcounttextview);
         Button resetButton = (Button) findViewById(R.id.resetButton);
         TextView dabStatus = (TextView) findViewById(R.id.dabstatus);
-
-        listener = new DabEventListener(output, values, dabStatus);
+        TextView calories = (TextView) findViewById(R.id.caloriesBurnedTextView);
+        listener = new DabEventListener(output, values, dabStatus,calories);
         resetButton.setOnClickListener(dabButtonEventListener);
         manager.registerListener(listener, sensor, manager.SENSOR_DELAY_GAME);
 

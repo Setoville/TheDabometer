@@ -3,7 +3,6 @@ package seto.ca.thedabometer;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.widget.Button;
 import android.widget.TextView;
 
 public class DabEventListener implements SensorEventListener{
@@ -11,11 +10,11 @@ public class DabEventListener implements SensorEventListener{
     private float[] filteredReadings;
     private float[][] historicalReadings;
     public static float value[];
-    public static int dabStreak = 0;
     public static int dabCount = 0;
-
+    public static double caloriesBurned = 0;
     private TextView output;
     private TextView dabstatus;
+    private TextView caloriesTV;
     public boolean leftDab = false;
     public boolean rightDab = false;
 
@@ -25,6 +24,7 @@ public class DabEventListener implements SensorEventListener{
     final int SAMPLEDEFAULT=30;
 
     String dab;
+    String cal;
     private final int C = 16;
 
 
@@ -32,7 +32,6 @@ public class DabEventListener implements SensorEventListener{
     state myState = state.WAIT;
     enum sig{SIG_LEFTY,SIG_RIGHTY,SIG_X};
     sig mySig = sig.SIG_X;
-
     double recordx = 0;
     double recordy = 0;
     double recordz = 0;
@@ -47,7 +46,7 @@ public class DabEventListener implements SensorEventListener{
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-    public DabEventListener (TextView view, double[][] inValues, TextView dabStatusPass){
+    public DabEventListener (TextView view, double[][] inValues, TextView dabStatusPass, TextView caloriesPass){
 
         historicalReadings = new float[100][3];
         //set historicalReadings to 0
@@ -56,12 +55,14 @@ public class DabEventListener implements SensorEventListener{
                 historicalReadings[i][j] = 0;
         }
         output = view;
+        caloriesTV = caloriesPass;
         dabstatus = dabStatusPass;
         values=inValues;
         value = new float[3];
         ctr_z = SAMPLEDEFAULT;
 
         dab = "Waiting...";
+        cal = "0";
 
         filteredReadings = new float[3];
         filteredReadings[0] = 0;
@@ -103,7 +104,6 @@ public class DabEventListener implements SensorEventListener{
 
             output.setText(Integer.toString(dabCount));
             dabstatus.setText(dab);
-
             System.out.println("DC:" +dabCount);
 
             values[index][0] = filteredReadings[0];
@@ -126,7 +126,6 @@ public class DabEventListener implements SensorEventListener{
         for(int i = 0; i<3;i++ ) {
             value[i] = 0;
         }
-        dabStreak = 0;
     }
 
     public void FSM_Z()  {
@@ -185,6 +184,8 @@ public class DabEventListener implements SensorEventListener{
                 case DETERMINED:
                     //OUTPUT UP-DOWN HERE
                     //dabCount++;
+
+
                     if (mySig == sig.SIG_LEFTY) {
                         //do we need a textview object to .setText(Zsignature);?
 
@@ -194,7 +195,6 @@ public class DabEventListener implements SensorEventListener{
                             leftDab = false;
                         }
                         dab = "NICE DAB";
-
                     } else if (mySig == sig.SIG_RIGHTY) {
 
                         if (!leftDab){
@@ -203,20 +203,18 @@ public class DabEventListener implements SensorEventListener{
                             rightDab = false;
                         }
 
-
                         dab = "NICE DAB";
 
+                    }
 
-                    } //else
-                    //out = "UNDETERMINED";
+                    caloriesBurned = CalorieCalculator(dabCount);
+                    cal = String.format("%.5f", caloriesBurned);
+                    caloriesTV.setText(cal);
                     mySig = sig.SIG_X;
-                    //Log.d(Zsignature.toString());
-
                     break;
 
                 default:
                     myState = state.WAIT;
-
                     mySig = sig.SIG_X;
 
                     break;
@@ -236,5 +234,12 @@ public class DabEventListener implements SensorEventListener{
 
 
 
+    }
+    public double CalorieCalculator(int dabs){
+        double calories;
+
+        calories = dabs * 1.06319;
+
+        return calories;
     }
 }
