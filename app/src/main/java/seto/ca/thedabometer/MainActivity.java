@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -29,7 +30,9 @@ public class MainActivity extends AppCompatActivity {
         Button resetButton = (Button) findViewById(R.id.resetButton);
         TextView dabStatus = (TextView) findViewById(R.id.dabstatus);
         TextView calories = (TextView) findViewById(R.id.caloriesBurnedTextView);
-        listener = new DabEventListener(output, values, dabStatus,calories);
+        ImageView dabPicture = (ImageView) findViewById(R.id.dabImageView);
+        dabPicture.setImageResource(R.drawable.dabneutral);
+        listener = new DabEventListener(output, values, dabStatus,calories,dabPicture);
         resetButton.setOnClickListener(dabButtonEventListener);
         manager.registerListener(listener, sensor, manager.SENSOR_DELAY_GAME);
 

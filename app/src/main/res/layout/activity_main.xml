@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,23 +12,28 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="seto.ca.thedabometer.MainActivity">
 
+   <LinearLayout
+       android:orientation="vertical"
+       android:layout_width="wrap_content"
+       android:gravity="center_horizontal"
+       android:layout_height="wrap_content">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Waiting..."
         android:id="@+id/dabstatus"
-        android:textSize="50dp"/>
+        android:textSize="35dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Dab Count:"
-        android:textSize="50dp"/>
+        android:textSize="35dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="40dp"
+        android:textSize="35dp"
         android:id="@+id/dabcounttextview"/>
 
     <Button
@@ -38,17 +43,24 @@
         android:hint="Reset Dabs"
         />
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dabImageView"
+        android:layout_centerVertical="true"
+        />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="40dp"
+        android:textSize="35dp"
         android:text="Calories burned:"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0"
-        android:textSize="40dp"
+        android:textSize="35dp"
         android:id="@+id/caloriesBurnedTextView"/>
+   </LinearLayout>
+</ScrollView>
 
-</LinearLayout>

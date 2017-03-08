@@ -3,6 +3,7 @@ package seto.ca.thedabometer;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class DabEventListener implements SensorEventListener{
@@ -15,6 +16,7 @@ public class DabEventListener implements SensorEventListener{
     private TextView output;
     private TextView dabstatus;
     private TextView caloriesTV;
+    private ImageView dabImageView;
     public boolean leftDab = false;
     public boolean rightDab = false;
 
@@ -46,7 +48,7 @@ public class DabEventListener implements SensorEventListener{
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-    public DabEventListener (TextView view, double[][] inValues, TextView dabStatusPass, TextView caloriesPass){
+    public DabEventListener (TextView view, double[][] inValues, TextView dabStatusPass, TextView caloriesPass,ImageView dabPass){
 
         historicalReadings = new float[100][3];
         //set historicalReadings to 0
@@ -54,6 +56,7 @@ public class DabEventListener implements SensorEventListener{
             for(int j = 0; j<3;j++)
                 historicalReadings[i][j] = 0;
         }
+        dabImageView = dabPass;
         output = view;
         caloriesTV = caloriesPass;
         dabstatus = dabStatusPass;
@@ -195,6 +198,9 @@ public class DabEventListener implements SensorEventListener{
                             leftDab = false;
                         }
                         dab = "NICE DAB";
+
+                        dabImageView.setImageResource(R.drawable.dabright);
+
                     } else if (mySig == sig.SIG_RIGHTY) {
 
                         if (!leftDab){
@@ -202,6 +208,8 @@ public class DabEventListener implements SensorEventListener{
                             leftDab = true;
                             rightDab = false;
                         }
+
+                        dabImageView.setImageResource(R.drawable.dableft);
 
                         dab = "NICE DAB";
 
@@ -221,6 +229,7 @@ public class DabEventListener implements SensorEventListener{
             }
             if (ctr_z <= 0) {
                 //RESET AFTER 30 SAMPLES AND NOTHING
+                dabImageView.setImageResource(R.drawable.dabneutral);
                 myState = state.WAIT;
                 mySig = sig.SIG_X;
                 leftDab=false;
@@ -238,7 +247,7 @@ public class DabEventListener implements SensorEventListener{
     public double CalorieCalculator(int dabs){
         double calories;
 
-        calories = dabs * 1.06319;
+        calories = dabs * 1.06319/2;
 
         return calories;
     }
