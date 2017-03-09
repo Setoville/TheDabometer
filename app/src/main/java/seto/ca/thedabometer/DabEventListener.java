@@ -107,7 +107,7 @@ public class DabEventListener implements SensorEventListener{
 
             output.setText(Integer.toString(dabCount));
             dabstatus.setText(dab);
-            System.out.println("DC:" +dabCount);
+           // System.out.println("DC:" +dabCount);
 
             values[index][0] = filteredReadings[0];
             values[index][1] = filteredReadings[1];
